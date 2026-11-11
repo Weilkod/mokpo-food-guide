@@ -172,11 +172,7 @@
     </ul>
   </section>
 
-  <footer>
-    별점과 리뷰 수는 2026년 11월 10일 네이버 플레이스 목록에 표시된 기준이에요. 별점이 없는 곳은 목록에 별점이 표시되지 않은 곳이에요.
-    관광지의 요금과 운영시간은 2026년 11월 10일 네이버 플레이스에 표시된 기준이라 바뀔 수 있어요. 거리는 숙소에서 잰 직선거리예요. 사진 출처는 네이버 플레이스(업체·방문자 사진)이고, 개인 공유용으로만 사용해 주세요.
-    지도 데이터는 © OpenStreetMap 기여자의 것이에요.
-  </footer>
+  
 </div>
 
 <button class="totop" id="totop" aria-label="맨 위로"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M6 14l6-6 6 6"/></svg>맨 위</button>
@@ -365,5 +361,21 @@ $top.onclick = () => scrollTo({top:0, behavior:"smooth"});
 render();
 </script>
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" crossorigin="" onload="initMap()" onerror="initMap()"></script>
+<style>.sbox{position:relative;margin:8px 0}.sbox input{width:100%;box-sizing:border-box;padding:11px 14px;border:1px solid #ccc;border-radius:12px;font-size:15px;background:#fff}.sres{display:none;position:absolute;left:0;right:0;top:100%;z-index:50;background:#fff;border:1px solid #ddd;border-radius:12px;box-shadow:0 8px 24px rgba(0,0,0,.15);max-height:50vh;overflow:auto;margin-top:4px}.sres button{display:block;width:100%;text-align:left;padding:10px 14px;border:0;border-bottom:1px solid #eee;background:none;font-size:14px;cursor:pointer}.sres button small{color:#888;margin-left:6px}.sres .none{padding:12px 14px;color:#888;font-size:14px}</style>
+<script>
+(function(){
+const tabs=document.getElementById('tabs');
+const box=document.createElement('div');box.className='sbox';box.innerHTML='<input type="search" placeholder="식당·카페·관광지 검색 (이름, 메뉴, 지역)"><div class="sres"></div>';
+tabs.prepend(box);
+const inp=box.querySelector('input'),res=box.querySelector('.sres');
+const TN={food:'식당',cafe:'카페',spot:'관광지'};
+inp.addEventListener('input',()=>{const q=inp.value.trim().toLowerCase();if(!q){res.style.display='none';return}
+const hits=[];for(const t of Object.keys(TN))for(const d of (DATA[t]||[])){if(JSON.stringify(d).replace(/"(lat|lng|dist|far|id)":[^,}]+,?/g,'').toLowerCase().includes(q))hits.push([t,d])}
+res.innerHTML=hits.length?'':'<div class="none">검색 결과가 없어요</div>';
+hits.slice(0,30).forEach(([t,d])=>{const b=document.createElement('button');b.innerHTML=d.n+'<small>'+TN[t]+' · '+(d.c||'')+'</small>';b.onclick=()=>{res.style.display='none';jumpTo(d.id,t)};res.appendChild(b)});
+res.style.display='block'});
+document.addEventListener('click',e=>{if(!box.contains(e.target))res.style.display='none'});
+})();
+</script>
 </body>
 </html>
